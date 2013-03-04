@@ -1,7 +1,7 @@
 VTU-Result-Parser-php-library
 =============================
 
-Php library for parsing VTU Results.This library can dyanamically parse the VTU site with respect to back pepers etc.
+Php library for parsing VTU Results.This library can dyanamically parse the VTU site with respect to back pepers et.
 
 Version : 2.0.5 (3/3/2013) 
 
@@ -11,8 +11,8 @@ Email: 0vishalvijay0@gmail.com
 Support from: Matrix Inc., www.vtulife.com
 
 How to use:
-	1) Copy this file to your folder.
-	2) Then import this to your php code by using:
+	1) Copy 'VTUResultParser.php' file to your folder.
+	2) Then import 'VTUResultParser.php' to your php code by using:
 		require_once __DIR__ . '/VTUResultParser.php';
 	3)Then create an object of this class by using:
 		$result=new VTUResultParser(0); //Here passing 0 for 'Regular result' and passing 1 for 'Revaluation result.' 
