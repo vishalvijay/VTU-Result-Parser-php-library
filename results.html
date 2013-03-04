@@ -1,0 +1,80 @@
+<!---Version 0.5.9--->
+<html>
+	<head>
+		<title>VTU Result - Developed for www.vtulife.com</title>
+		<style type="text/css">
+			.page{
+				padding:50px;
+				background: #0a3b57;
+				color: white;
+				font-family:"Myriad Pro";
+			}
+			.resultType{
+				margin-top:25px;
+				color: white;
+			}
+			#result{
+				margin-top:25px;
+				color: white;
+			}
+			#usn{
+				margin: 5px;
+				border-radius: 5px;
+				color: white;
+				background-color: #597280;
+				font-size: 25px;
+				text-align :center;
+			}
+			input.uppercase{  
+				text-transform: uppercase;  
+				box-shadow: 5px 5px 5px #000000;
+			} 
+		</style>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				var request;
+				$("#usn").on('keyup',function() {
+					if(request)
+					request.abort();
+					var dat=$("#usn").val();
+					if($.trim(dat).length<10){
+						$("#result").html("");
+						$("#info").show();
+					}else if($.trim(dat).length==10){    
+						txt=$("#usn").val();
+						txt=txt.toUpperCase();
+						var exp = /^[1-9][a-zA-Z][a-zA-Z][0-9][0-9][a-zA-Z][a-zA-Z][0-9][0-9][0-9]$/;
+						if(exp.test(txt)){
+							var resultType =$("input[name='resultType']:checked").val();
+							$("#result").html("<img src=\"./result/loader.gif\"/><br/>Loading...");     
+							request=$.ajax({type: "GET",
+							url: "result/result_html.php?usn="+txt+"&resultType="+resultType,
+							dataType:"html",
+							success:function(result){
+								$("#info").hide();
+								$("#result").html(result);	            
+								$("#usn").attr("placeholder", "USN"); 
+							}
+						});
+					}else{
+						$("#result").html("Please enter a valid USN.");    
+					}
+				}		
+			});
+		});
+		</script>
+	</head>
+	<body>
+		<center>
+			<div class="page" >
+				<input type="text" id="usn" class="uppercase" placeholder="USN" maxlength="10"/><br/>
+				<div class="resultType">
+					<input type="radio" name="resultType" value="0" checked/> Result
+					<input type="radio" name="resultType" value="1"/> Revaluation result<br/>
+				</div>
+				<div id="result"></div>
+			</div>
+		</center>
+	</body>
+</html>
