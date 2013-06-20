@@ -9,12 +9,13 @@
 		if($result->errorValue==-1){
 			$response["name"] = $result->name;
 			$response["usn"] = $result->usn;
-			$response["semesters"] = $result->semesters;
+			$response["result"] = $result->result;
+			$response["percentage"] = $result->percentage;
+			$response["total"] = $result->total;
+			$response["semesters"] =$result->semesters;
 			$response["mark"]=$result->markInTable;
-			$response["success"] = 1;
-			$response["message"]=$result->getError();
+			$response["message"]="success";
 		} else{
-			$response["success"] = 0;
 			$response["message"]=$result->getError();
 		}
 		echo json_encode($response);

@@ -1,4 +1,4 @@
-	<!---Version 1.5.8--->
+	<!---Version 2.0.4 1/jun/2013--->
 	<style type="text/css">
 		.table{
 			box-shadow: 5px 5px 5px #000000;
@@ -89,54 +89,108 @@
 	function showResult(){
 		global $result;
 		if($result->errorValue==-1){
-			echo "
-			<table class=\"table\">
-				<tr class=\"headingRow\"><th class=\"headingCell\"colspan=\"3\">" . $result->name . "</th><th class=\"headingCell\" colspan=\"2\">" . $result->usn . "</th></tr>";
-			if($result->result=="FAIL")
-				echo "<tr class=\"resultRowFail\">";
-			else
-				echo "<tr class=\"resultRowPass\">";
-			
-			echo "	<td class=\"resultCell\" colspan=\"3\">Result : " .$result->result. "</td>
-					<td class=\"resultCell\" colspan=\"1\" >Percentage : " .$result->percentage. "%</td>
-					<td class=\"resultCell\" colspan=\"1\" >Total : " .$result->total. "</td>
-				</tr>
-			";
-			for($i=0;$i<sizeof($result->semesters);$i++){
-				echo "<tr class=\"semesterRow\">
-					<td class=\"semesterCell\" colspan=\"5\">Semester : ".$result->semesters[$i]."</td>
-				</tr>";
-				echo"<tr class=\"subheadingRow\">
-					<td class=\"subheadingCellLeft\">Subject</td>
-					<td class=\"subheadingCell\">External</td>
-					<td class=\"subheadingCell\">Internal</td>
-					<td class=\"subheadingCell\">Total</td>
-					<td class=\"subheadingCell\">Result</td>
-				</tr>";
-				for($j=0;$j<sizeof($result->markInTable[$i]);$j++){
-					if($j%2==0)
-						echo "<tr class=\"markRow1\">";
-					else
-						echo "<tr class=\"markRow2\">";
-					for($k=0;$k<sizeof($result->markInTable[$i][$j]);$k++){
-						if($k==0)
-							echo "<td class=\"subjectCell\">".$result->markInTable[$i][$j][$k]."</td>";
-						else if($k==3)
-							echo "<td class=\"totalSubjectCell\">".$result->markInTable[$i][$j][$k]."</td>";
-						else if($k==4){
-							if($result->markInTable[$i][$j][$k]=='P')
-								echo "<td class=\"resultPassCell\">".$result->markInTable[$i][$j][$k]."</td>";
-							else
-								echo "<td class=\"resultFailCell\">".$result->markInTable[$i][$j][$k]."</td>";
-						}else
-							echo "<td class=\"markCell\">".$result->markInTable[$i][$j][$k]."</td>";
+			if($result->resultFlag==0){
+				echo "
+				<table class=\"table\">
+					<tr class=\"headingRow\"><th class=\"headingCell\"colspan=\"3\">" . $result->name . "</th><th class=\"headingCell\" colspan=\"2\">" . $result->usn . "</th></tr>";
+				if($result->result[0]=="FAIL")
+					echo "<tr class=\"resultRowFail\">";
+				else
+					echo "<tr class=\"resultRowPass\">";
+				echo "	<td class=\"resultCell\" colspan=\"3\">Result : " .$result->result[0]. "</td>
+						<td class=\"resultCell\" colspan=\"1\" >Percentage : " .$result->percentage[0]. "%</td>
+						<td class=\"resultCell\" colspan=\"1\" >Total : " .$result->total[0]. "</td>
+					</tr>
+				";
+				for($i=0;$i<count($result->semesters);$i++){
+					echo "<tr class=\"semesterRow\">
+						<td class=\"semesterCell\" colspan=\"5\">Semester : ".$result->semesters[$i]."</td>
+					</tr>";
+					if($i!=0){
+						if($result->result[$i]=="FAIL")
+							echo "<tr class=\"resultRowFail\">";
+						else
+							echo "<tr class=\"resultRowPass\">";
+						echo "<td class=\"resultCell\" colspan=\"5\">Result : " .$result->result[$i]. "</td></tr>";
 					}
-					echo "</tr>";
+
+					echo"<tr class=\"subheadingRow\">
+						<td class=\"subheadingCellLeft\">Subject</td>
+						<td class=\"subheadingCell\">External</td>
+						<td class=\"subheadingCell\">Internal</td>
+						<td class=\"subheadingCell\">Total</td>
+						<td class=\"subheadingCell\">Result</td>
+					</tr>";
+					for($j=0;$j<count($result->markInTable[$i]);$j++){
+						if($j%2==0)
+							echo "<tr class=\"markRow1\">";
+						else
+							echo "<tr class=\"markRow2\">";
+						for($k=0;$k<count($result->markInTable[$i][$j]);$k++){
+							if($k==0)
+								echo "<td class=\"subjectCell\">".$result->markInTable[$i][$j][$k]."</td>";
+							else if($k==3)
+								echo "<td class=\"totalSubjectCell\">".$result->markInTable[$i][$j][$k]."</td>";
+							else if($k==4){
+								if($result->markInTable[$i][$j][$k]=='P')
+									echo "<td class=\"resultPassCell\">".$result->markInTable[$i][$j][$k]."</td>";
+								else
+									echo "<td class=\"resultFailCell\">".$result->markInTable[$i][$j][$k]."</td>";
+							}else
+								echo "<td class=\"markCell\">".$result->markInTable[$i][$j][$k]."</td>";
+						}
+						echo "</tr>";
+					}
 				}
+				echo "</table><br/>";
+			}else{
+				echo "
+				<table class=\"table\">
+					<tr class=\"headingRow\"><th class=\"headingCell\"colspan=\"3\">" . $result->name . "</th><th class=\"headingCell\" colspan=\"3\">" . $result->usn . "</th></tr>";
+				for($i=0;$i<count($result->semesters);$i++){
+					echo "<tr class=\"semesterRow\">
+						<td class=\"semesterCell\" colspan=\"6\">Semester : ".$result->semesters[$i]."</td>
+					</tr>";
+				
+					if($result->result[$i]=="FAIL")
+						echo "<tr class=\"resultRowFail\">";
+					else
+						echo "<tr class=\"resultRowPass\">";
+					echo "<td class=\"resultCell\" colspan=\"6\">Result : " .$result->result[$i]. "</td></tr>";
+
+					echo "<tr class=\"subheadingRow\">
+						<td class=\"subheadingCellLeft\">Subject</td>
+						<td class=\"subheadingCell\">Old</td>
+						<td class=\"subheadingCell\">Final</td>
+						<td class=\"subheadingCell\">Internal</td>
+						<td class=\"subheadingCell\">Total</td>
+						<td class=\"subheadingCell\">Result</td>
+					</tr>";
+					for($j=0;$j<count($result->markInTable[$i]);$j++){
+						if($j%2==0)
+							echo "<tr class=\"markRow1\">";
+						else
+							echo "<tr class=\"markRow2\">";
+						for($k=0;$k<count($result->markInTable[$i][$j]);$k++){
+							if($k==0)
+								echo "<td class=\"subjectCell\">".$result->markInTable[$i][$j][$k]."</td>";
+							else if($k==4||$k==2)
+								echo "<td class=\"totalSubjectCell\">".$result->markInTable[$i][$j][$k]."</td>";
+							else if($k==5){
+								if($result->markInTable[$i][$j][$k]=='P')
+									echo "<td class=\"resultPassCell\">".$result->markInTable[$i][$j][$k]."</td>";
+								else
+									echo "<td class=\"resultFailCell\">".$result->markInTable[$i][$j][$k]."</td>";
+							}else
+								echo "<td class=\"markCell\">".$result->markInTable[$i][$j][$k]."</td>";
+						}
+						echo "</tr>";
+					}
+				}
+				echo "</table><br/>";
 			}
-			echo "</table><br/>";
 		}else
-			echo "<br/>".$result->getError()."(".$result->givenUsn.")"."<br/>";
+			echo "<br/>".$result->getError()."(".$result->usn.")"."<br/>";
 	}
 	
 	if (isset($_GET["usn"])&&isset($_GET["resultType"])){
