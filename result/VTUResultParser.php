@@ -5,6 +5,7 @@
 			Php library for parsing VTU Results.
 			This library can dyanamically parse VTU result site with respect to semester result.
 		Version :
+				3.0.3 (26/6/2013)
 				3.0.2 (1/5/2013)
 				2.0.6 (18/3/2013)
 				2.0.5 (3/3/2013) 
@@ -193,7 +194,7 @@
 			for($j=0;$j<count($this->semesters);$j++){
 				if($this->semesters[$j]<3)
 					$this->percentage[$j]=($this->total[$j]*100)/825;
-				else if(($this->semesters[$j]==8||$this->semesters[$j]==10)&&isFinalYear($j))
+				else if(($this->semesters[$j]==8||$this->semesters[$j]==10)&&$this->isFinalYear($j))
 					$this->percentage[$j]=($this->total[$j]*100)/750;
 				else
 					$this->percentage[$j]=($this->total[$j]*100)/900;
