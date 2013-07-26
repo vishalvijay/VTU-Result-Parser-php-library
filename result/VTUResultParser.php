@@ -3,7 +3,7 @@
 		Title: VTU Result Parser Php Library 3.0.2
 		Description:
 			Php library for parsing VTU Results.
-			This library can dyanamically parse VTU result site with respect to semester result.
+			This library can dynamically parse VTU result site with respect to semester result.
 		Version :
 				3.0.3 (26/6/2013)
 				3.0.2 (1/5/2013)
@@ -134,11 +134,11 @@
 						return;
 					}
 				}else{
-					//Finding marks tables for revalution result table type 1
+					//Finding marks tables for revaluation result table type 1
 					if(preg_match_all("/Semester:<\/b><\/td>.*?<\/table><br><br>/", $html, $markTables1, PREG_SET_ORDER))
 						for($i=0;$i<count($markTables1);$i++)
 							$markTables[$i][0]=trim($markTables1[$i][0]);
-					//Finding marks tables for revalution result table type 2
+					//Finding marks tables for revaluation result table type 2
 					if(preg_match_all("/Semester:<\/b><\/td><td><b>".$this->semesters[count($this->semesters)-1].".*?<\/TD><\/TR>/", $html, $markTables2, PREG_SET_ORDER))
 						for($i=0;$i<count($markTables2);$i++)
 							$markTables[count($markTables1)+$i][0]=trim($markTables2[$i][0]);
@@ -147,15 +147,15 @@
 						return;
 					}
 				}
-				//Iteratting each table
+				//Iterating each table
 				for($i=0;$i<count($markTables);$i++)
 					//Finding each row from the current mark table
 					if(preg_match_all("/<tr><td width=250>.*?<\/tr>/", $markTables[$i][0], $tableRaws, PREG_SET_ORDER)){
-						//Iteratting each row
+						//Iterating each row
 						for($j=1;$j<count($tableRaws);$j++)
 							//Finding value of current table cells
 							if(preg_match_all("/<td.*?<\/td>/", $tableRaws[$j][0], $tableCells, PREG_SET_ORDER)){
-								//Iteratting each cell value
+								//Iterating each cell value
 								foreach($tableCells as $cell)
 									//storing each cell value
 									$this->markInTable[$i][$j-1][]=trim(strip_tags($cell[0]));
