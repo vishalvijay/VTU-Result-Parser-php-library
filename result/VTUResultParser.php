@@ -1,15 +1,16 @@
 <?php
 	/*
-		Title: VTU Result Parser Php Library 3.0.2
+		Title: VTU Result Parser Php Library 3.0.4
 		Description:
 			Php library for parsing VTU Results.
 			This library can dynamically parse VTU result site with respect to semester result.
 		Version :
-				3.0.3 (26/6/2013)
-				3.0.2 (1/5/2013)
-				2.0.6 (18/3/2013)
-				2.0.5 (3/3/2013) 
-				2.0.4 (25/2/2013)
+			3.0.4 (7/10/2013)
+			3.0.3 (26/6/2013)
+			3.0.2 (1/5/2013)
+			2.0.6 (18/3/2013)
+			2.0.5 (3/3/2013)
+			2.0.4 (25/2/2013)
 	 
 		Author: Vishal Vijay (V4 Creations)
 		Phone: +919995533909, +919739211838
@@ -73,7 +74,6 @@
 		}
 		
 		public function requestResult($currentUsn){
-			ini_set('max_execution_time', 60);
 			$currentUsn=trim($currentUsn);
 			$this->usn=$currentUsn;
 			unset($this->markInTable);
