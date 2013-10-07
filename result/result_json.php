@@ -21,10 +21,10 @@
 		echo json_encode($response);
 	}
 	
-	if (isset($_POST["usn"])&&isset($_POST["resultType"])){
+	if (isset($_GET["usn"])&&isset($_GET["resultType"])){
 		global $result;
-		$result=new VTUResultParser($_POST["resultType"]);
-		$result->requestResult($_POST["usn"]);
+		$result=new VTUResultParser($_GET["resultType"]);
+		$result->requestResult($_GET["usn"]);
 		showResult();
 	}else
 		echo "<br/>Access denied.<br/>";
