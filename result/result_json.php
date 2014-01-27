@@ -15,7 +15,9 @@
 			$response["semesters"] =$result->semesters;
 			$response["mark"]=$result->markInTable;
 			$response["message"]="success";
+			http_response_code(200);
 		} else{
+			http_response_code(403);
 			$response["message"]=$result->getError();
 		}
 		echo json_encode($response);
@@ -26,6 +28,9 @@
 		$result=new VTUResultParser($_GET["resultType"]);
 		$result->requestResult($_GET["usn"]);
 		showResult();
-	}else
-		echo "<br/>Access denied.<br/>";
+	}else{
+		http_response_code(401);
+		$response["result"]="access_denied";
+		echo json_encode($response);
+	}
 ?>
