@@ -18,7 +18,7 @@
 			http_response_code(200);
 		} else{
 			http_response_code(403);
-			$response["message"]=$result->getError();
+			$response["error"]=$result->getError();
 		}
 		echo json_encode($response);
 	}
@@ -30,7 +30,7 @@
 		showResult();
 	}else{
 		http_response_code(401);
-		$response["result"]="access_denied";
+		$response["error"]="access_denied";
 		echo json_encode($response);
 	}
 ?>
