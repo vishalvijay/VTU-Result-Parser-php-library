@@ -1,10 +1,11 @@
 VTU-Result-Parser-php-library
 =============================
-	Title: VTU Result Parser Php Library 3.0.4
+	Title: VTU Result Parser Php Library 3.0.5
 	Description:
 		Php library for parsing VTU Results.
 		This library can dynamically parse VTU result site with respect to semester result.
 	Version :
+		3.0.5 (29/1/2014)
 		3.0.4 (7/10/2013)
 		3.0.2 (1/5/2013)
 		2.0.6 (18/3/2013)
