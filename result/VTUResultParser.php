@@ -1,17 +1,15 @@
 <?php
 	/*
-		Title: VTU Result Parser Php Library 3.0.5
+		Title: VTU Result Parser Php Library 3.0.2
 		Description:
 			Php library for parsing VTU Results.
 			This library can dynamically parse VTU result site with respect to semester result.
 		Version :
-			3.0.5 (29/1/2014)
-			3.0.4 (7/10/2013)
-			3.0.3 (26/6/2013)
-			3.0.2 (1/5/2013)
-			2.0.6 (18/3/2013)
-			2.0.5 (3/3/2013)
-			2.0.4 (25/2/2013)
+				3.0.3 (26/6/2013)
+				3.0.2 (1/5/2013)
+				2.0.6 (18/3/2013)
+				2.0.5 (3/3/2013) 
+				2.0.4 (25/2/2013)
 	 
 		Author: Vishal Vijay (V4 Creations)
 		Phone: +919995533909, +919739211838
@@ -58,8 +56,8 @@
 		private $proxy;
 		private $url;
 		
-		private $FLAG_REGULAR_RESULT='http://results.vtu.ac.in/vitavi.php';
-		private $FLAG_REVAL_RESULT='http://results.vtu.ac.in/vitavireval.php';
+		private $FLAG_REGULAR_RESULT='http://results.vtu.ac.in/vitavi.php?submit=true&rid=';
+		private $FLAG_REVAL_RESULT='http://results.vtu.ac.in/vitavireval.php?submit=true&rid=';
 		
 		function __construct($resultFlag) {
 			$this->resultFlag=$resultFlag;
@@ -75,6 +73,7 @@
 		}
 		
 		public function requestResult($currentUsn){
+			ini_set('max_execution_time', 60);
 			$currentUsn=trim($currentUsn);
 			$this->usn=$currentUsn;
 			unset($this->markInTable);
@@ -84,16 +83,14 @@
 				$this->errorValue=6;
 				return;
 			}
-
-			$fields = array('rid'=> urlencode($currentUsn),'submit' => urlencode('SUBMIT'));
-			$ch = curl_init($this->url);
-			curl_setopt($ch, CURLOPT_POST, true);
+			
+			$ch = curl_init($this->url.$currentUsn);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
 			curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
-			curl_setopt($ch, CURLOPT_TIMEOUT, 45);
+			curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 			$html = curl_exec($ch);
-
+			
 			if(curl_errno($ch)==0){
 				curl_close($ch);
 				$html = preg_replace( '/\s+/', ' ', $html );
@@ -187,6 +184,12 @@
 						$this->total[$j]+=$this->markInTable[$j][$i][3];
 			}
 		}
+		private function isMCA($currentusn){
+			if(preg_match('/MCA/',substr($currentusn,5,3))){
+				return true;
+			}
+			return false;
+		}
 		private function isFinalYear($sem){
 			for($i=0;$i<count($this->markInTable[$sem]);$i++)
 					if(preg_match("/.*?Project.*?/", $this->markInTable[$sem][$i][0], $matches))
@@ -194,15 +197,21 @@
 			return false;
 		}
 		private function calculatePercentage(){
-			for($j=0;$j<count($this->semesters);$j++){
-				if($this->semesters[$j]<3)
-					$this->percentage[$j]=($this->total[$j]*100)/825;
-				else if(($this->semesters[$j]==8||$this->semesters[$j]==10)&&$this->isFinalYear($j))
-					$this->percentage[$j]=($this->total[$j]*100)/750;
-				else
-					$this->percentage[$j]=($this->total[$j]*100)/900;
-				$this->percentage[$j]=number_format((float)$this->percentage[$j], 2, '.', '');
+			if($this->isMCA($this->usn)){
+				$this->percentage[0]=($this->total[$j]*100)/1050;
 			}
+			else{
+				for($j=0;$j<count($this->semesters);$j++){
+					if($this->semesters[$j]<3)
+						$this->percentage[$j]=($this->total[$j]*100)/825;
+					else if(($this->semesters[$j]==8||$this->semesters[$j]==10)&&$this->isFinalYear($j))
+						$this->percentage[$j]=($this->total[$j]*100)/750;
+					else
+						$this->percentage[$j]=($this->total[$j]*100)/900;
+					$this->percentage[$j]=number_format((float)$this->percentage[$j], 2, '.', '');
+				}	
+			}
+			
 		}
 		private function calculateResult(){
 			for($j=0;$j<count($this->semesters);$j++){
