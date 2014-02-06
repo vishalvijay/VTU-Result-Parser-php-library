@@ -1,15 +1,17 @@
 <?php
 	/*
-		Title: VTU Result Parser Php Library 3.0.2
+		Title: VTU Result Parser Php Library 3.0.5
 		Description:
 			Php library for parsing VTU Results.
 			This library can dynamically parse VTU result site with respect to semester result.
 		Version :
-				3.0.3 (26/6/2013)
-				3.0.2 (1/5/2013)
-				2.0.6 (18/3/2013)
-				2.0.5 (3/3/2013) 
-				2.0.4 (25/2/2013)
+			3.0.5 (29/1/2014)
+			3.0.4 (7/10/2013)
+			3.0.3 (26/6/2013)
+			3.0.2 (1/5/2013)
+			2.0.6 (18/3/2013)
+			2.0.5 (3/3/2013)
+			2.0.4 (25/2/2013)
 	 
 		Author: Vishal Vijay (V4 Creations)
 		Phone: +919995533909, +919739211838
@@ -56,8 +58,8 @@
 		private $proxy;
 		private $url;
 		
-		private $FLAG_REGULAR_RESULT='http://results.vtu.ac.in/vitavi.php?submit=true&rid=';
-		private $FLAG_REVAL_RESULT='http://results.vtu.ac.in/vitavireval.php?submit=true&rid=';
+		private $FLAG_REGULAR_RESULT='http://results.vtu.ac.in/vitavi.php';
+		private $FLAG_REVAL_RESULT='http://results.vtu.ac.in/vitavireval.php';
 		
 		function __construct($resultFlag) {
 			$this->resultFlag=$resultFlag;
@@ -73,7 +75,6 @@
 		}
 		
 		public function requestResult($currentUsn){
-			ini_set('max_execution_time', 60);
 			$currentUsn=trim($currentUsn);
 			$this->usn=$currentUsn;
 			unset($this->markInTable);
@@ -83,14 +84,16 @@
 				$this->errorValue=6;
 				return;
 			}
-			
-			$ch = curl_init($this->url.$currentUsn);
+
+			$fields = array('rid'=> urlencode($currentUsn),'submit' => urlencode('SUBMIT'));
+			$ch = curl_init($this->url);
+			curl_setopt($ch, CURLOPT_POST, true);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
 			curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
-			curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-			curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 45);
 			$html = curl_exec($ch);
-			
+
 			if(curl_errno($ch)==0){
 				curl_close($ch);
 				$html = preg_replace( '/\s+/', ' ', $html );
