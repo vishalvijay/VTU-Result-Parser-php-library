@@ -44,7 +44,7 @@
 					}else if($.trim(dat).length==10){    
 						txt=$("#usn").val();
 						txt=txt.toUpperCase();
-						var exp = /^[1-9][a-zA-Z][a-zA-Z][0-9][0-9][a-zA-Z][a-zA-Z][0-9][0-9][0-9]$/;
+						var exp = /^[1-9][a-zA-Z][a-zA-Z][0-9][0-9][a-zA-Z][a-zA-Z][a-zA-Z0-9][0-9][0-9]$/;
 						if(exp.test(txt)){
 							var resultType =$("input[name='resultType']:checked").val();
 							$("#result").html("<img src=\"./result/loader.gif\"/><br/>Loading...");     

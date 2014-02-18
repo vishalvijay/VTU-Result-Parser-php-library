@@ -187,12 +187,11 @@
 						$this->total[$j]+=$this->markInTable[$j][$i][3];
 			}
 		}
-		private function isMCA($currentusn){
-			if(preg_match('/MCA/',substr($currentusn,5,3))){
-				return true;
-			}
-			return false;
-		}
+		private function isMCA(){
+      if(preg_match('/MCA/i',$this->usn))
+        return true;
+      return false;
+    }
 		private function isFinalYear($sem){
 			for($i=0;$i<count($this->markInTable[$sem]);$i++)
 					if(preg_match("/.*?Project.*?/", $this->markInTable[$sem][$i][0], $matches))
@@ -200,22 +199,19 @@
 			return false;
 		}
 		private function calculatePercentage(){
-			if($this->isMCA($this->usn)){
-				$this->percentage[0]=($this->total[$j]*100)/1050;
-			}
-			else{
-				for($j=0;$j<count($this->semesters);$j++){
-					if($this->semesters[$j]<3)
-						$this->percentage[$j]=($this->total[$j]*100)/825;
-					else if(($this->semesters[$j]==8||$this->semesters[$j]==10)&&$this->isFinalYear($j))
-						$this->percentage[$j]=($this->total[$j]*100)/750;
-					else
-						$this->percentage[$j]=($this->total[$j]*100)/900;
-					$this->percentage[$j]=number_format((float)$this->percentage[$j], 2, '.', '');
-				}	
-			}
-			
-		}
+      for($j=0;$j<count($this->semesters);$j++){
+        $maxTotal;
+        if($this->isMCA())
+          $maxTotal = 1050;
+        else if($this->semesters[$j]<3)
+          $maxTotal = 825;
+        else if(($this->semesters[$j]==8||$this->semesters[$j]==10)&&$this->isFinalYear($j))
+          $maxTotal = 750;
+        else
+          $maxTotal = 900;
+        $this->percentage[$j]=number_format((float)(($this->total[$j]*100)/$maxTotal), 2, '.', '');
+      }
+    }
 		private function calculateResult(){
 			for($j=0;$j<count($this->semesters);$j++){
 				if(trim($this->result[$j])!="")
