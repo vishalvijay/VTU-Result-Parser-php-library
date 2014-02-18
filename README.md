@@ -1,10 +1,11 @@
 VTU-Result-Parser-php-library
 =============================
-	Title: VTU Result Parser Php Library 3.0.5
+	Title: VTU Result Parser Php Library 3.0.6
 	Description:
 		Php library for parsing VTU Results.
 		This library can dynamically parse VTU result site with respect to semester result.
 	Version :
+		3.0.6 (18/2/2014)
 		3.0.5 (29/1/2014)
 		3.0.4 (7/10/2013)
 		3.0.2 (1/5/2013)
@@ -13,10 +14,13 @@ VTU-Result-Parser-php-library
 		2.0.4 (25/2/2013)
 	
 	Author: Vishal Vijay (V4 Creations)
-	Phone: +919995533909, +919739211838
 	Email: 0vishalvijay0@gmail.com
-	Support from: Matrix Inc., www.vtulife.com
+	Support from: Team Matrix, www.vtulife.com
 	
+	What is new:
+		* 3.0.6
+			Support for MCA results
+			
 	How to use:
 		1) Copy this file to your folder.
 		2) Then import this library to your php code by using:
@@ -24,7 +28,7 @@ VTU-Result-Parser-php-library
 		3)Then create an object of this class by using:
 			$result=new VTUResultParser(0); //Here passing 0 for 'Regular result' and passing 1 for 'Revaluation result.' 
 		4)Then you can request for result by using requestResult($usn) method:
-			$result->requestResult("4PA09CSxxx");
+			$result->requestResult("4PA12CSxxx");
 		5)Displaying the result :
 			$result->name : Name of student.
 			$result->usn : USN of student.

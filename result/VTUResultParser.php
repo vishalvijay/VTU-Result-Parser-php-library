@@ -1,10 +1,11 @@
 <?php
 	/*
-		Title: VTU Result Parser Php Library 3.0.5
+		Title: VTU Result Parser Php Library 3.0.6
 		Description:
 			Php library for parsing VTU Results.
 			This library can dynamically parse VTU result site with respect to semester result.
 		Version :
+			3.0.6 (18/2/2014)
 			3.0.5 (29/1/2014)
 			3.0.4 (7/10/2013)
 			3.0.3 (26/6/2013)
@@ -14,9 +15,8 @@
 			2.0.4 (25/2/2013)
 	 
 		Author: Vishal Vijay (V4 Creations)
-		Phone: +919995533909, +919739211838
 		Email: 0vishalvijay0@gmail.com
-		Support from: Matrix Inc., www.vtulife.com
+		Support from: Team Matrix, www.vtulife.com
 		
 		How to use:
 			1) Copy this file to your folder.
@@ -25,7 +25,7 @@
 			3)Then create an object of this class by using:
 				$result=new VTUResultParser(0); //Here passing 0 for 'Regular result' and passing 1 for 'Revaluation result.' 
 			4)Then you can request for result by using requestResult($usn) method:
-				$result->requestResult("4PA09CSxxx");
+				$result->requestResult("4PA12CSxxx");
 			5)Displaying the result :
 				$result->name : Name of student.
 				$result->usn : USN of student.
@@ -70,6 +70,7 @@
 			else
 				$this->url=$this->FLAG_REVAL_RESULT;
 		}
+
 		public function setProxy($currentProxy){
 			$this->proxy=$currentProxy;
 		}
@@ -179,7 +180,8 @@
 				return;
 			}
 		}
-		function calculateTotal(){
+
+		private function calculateTotal(){
 			for($j=0;$j<count($this->semesters);$j++){
 				$this->total[$j]=0;
 				for($i=0;$i<count($this->markInTable[$j]);$i++)
@@ -187,17 +189,20 @@
 						$this->total[$j]+=$this->markInTable[$j][$i][3];
 			}
 		}
+
 		private function isMCA(){
       if(preg_match('/MCA/i',$this->usn))
         return true;
       return false;
     }
+
 		private function isFinalYear($sem){
 			for($i=0;$i<count($this->markInTable[$sem]);$i++)
 					if(preg_match("/.*?Project.*?/", $this->markInTable[$sem][$i][0], $matches))
 						return true;
 			return false;
 		}
+
 		private function calculatePercentage(){
       for($j=0;$j<count($this->semesters);$j++){
         $maxTotal;
@@ -212,6 +217,7 @@
         $this->percentage[$j]=number_format((float)(($this->total[$j]*100)/$maxTotal), 2, '.', '');
       }
     }
+
 		private function calculateResult(){
 			for($j=0;$j<count($this->semesters);$j++){
 				if(trim($this->result[$j])!="")
