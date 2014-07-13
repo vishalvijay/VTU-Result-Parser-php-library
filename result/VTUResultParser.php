@@ -86,7 +86,7 @@
 				return;
 			}
 
-			$fields = array('rid'=> urlencode($currentUsn),'submit' => urlencode('SUBMIT'));
+			$fields = array('rid'=> urlencode($currentUsn),'submit' => urlencode('SUBMIT'), '1f0a-B9BB_7e826562' => urlencode('13c073f31ff4b365a1381a36e43c2c66731a3e0e'));
 			$ch = curl_init($this->url);
 			curl_setopt($ch, CURLOPT_POST, true);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
