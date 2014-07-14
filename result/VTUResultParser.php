@@ -58,17 +58,19 @@
 		private $proxy;
 		private $url;
 		
-		private $FLAG_REGULAR_RESULT='http://results.vtu.ac.in/vitavi.php';
-		private $FLAG_REVAL_RESULT='http://results.vtu.ac.in/vitavireval.php';
+		const BASE_URL='http://results.vtu.ac.in/';
+		const FLAG_REGULAR_RESULT='http://results.vtu.ac.in/vitavi.php';
+		const FLAG_REVAL_RESULT='http://results.vtu.ac.in/vitavireval.php';
+		const TOKEN_FILE = './cashe/token_cashe';
 		
 		function __construct($resultFlag) {
 			$this->resultFlag=$resultFlag;
 			$this->errorValue=-1;
 			$this->proxy="";
 			if($resultFlag==0)
-				$this->url=$this->FLAG_REGULAR_RESULT;
+				$this->url=self::FLAG_REGULAR_RESULT;
 			else
-				$this->url=$this->FLAG_REVAL_RESULT;
+				$this->url=self::FLAG_REVAL_RESULT;
 		}
 
 		public function setProxy($currentProxy){
@@ -86,7 +88,7 @@
 				return;
 			}
 
-			$fields = array('rid'=> urlencode($currentUsn),'submit' => urlencode('SUBMIT'), '1f0a-B9BB_7e826562' => urlencode('13c073f31ff4b365a1381a36e43c2c66731a3e0e'));
+			$fields = array('rid'=> urlencode($currentUsn),'submit' => urlencode('SUBMIT'), '1f0a-B9BB_7e826562' => urlencode($this->getToken()));
 			$ch = curl_init($this->url);
 			curl_setopt($ch, CURLOPT_POST, true);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -124,7 +126,7 @@
 					$this->errorValue=7;
 					return;
 				}
-				if($this->url==$this->FLAG_REGULAR_RESULT){
+				if($this->url==self::FLAG_REGULAR_RESULT){
 					//Finding current sem total
 					if (preg_match("/Total Marks:.*?[0-9]+.*?<\/td>/", $html, $matches))
 						$this->totalInPage=trim(substr(strip_tags($matches[0]),13,-20));
@@ -241,6 +243,43 @@
 				}else
 					$this->result[$j]="FAIL";
 			}
+		}
+
+		private function getToken(){
+			$token = "";
+			$lastTokenInfo = file_get_contents(self::TOKEN_FILE);
+			if(empty($lastTokenInfo))
+				$token = $this->getAndCasheToken();
+			else{
+				$lastTokenInfo = explode("###", $lastTokenInfo);
+				if($lastTokenInfo[0]+7200000 > round(microtime(true) * 1000))
+					$token = $lastTokenInfo[1];
+				else
+					$token = $this->getAndCasheToken();
+			}
+			return $token;
+		}
+
+		private function getAndCasheToken(){
+			$token = $this->getTokenFromVTU();
+			file_put_contents(self::TOKEN_FILE, round(microtime(true) * 1000)."###".$token);
+			return $token;
+		}
+
+		private function getTokenFromVTU(){
+			$token = NULL;
+			$ch = curl_init(self::BASE_URL);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 45);
+			$html = curl_exec($ch);
+			if(curl_errno($ch)==0){
+				//Finding token
+				if (preg_match_all("/1f0a-B9BB_7e826562\" value=\".+?\">/", $html, $matches))
+					$token = substr($matches[0][0], 27, -2);
+			}
+			curl_close($ch);
+			return $token;
 		}
 		
 		public function getError(){
