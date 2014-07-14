@@ -1,49 +1,12 @@
 <?php
 	/*
-		Title: VTU Result Parser Php Library 3.0.6
-		Description:
-			Php library for parsing VTU Results.
-			This library can dynamically parse VTU result site with respect to semester result.
-		Version :
-			3.0.6 (18/2/2014)
-			3.0.5 (29/1/2014)
-			3.0.4 (7/10/2013)
-			3.0.3 (26/6/2013)
-			3.0.2 (1/5/2013)
-			2.0.6 (18/3/2013)
-			2.0.5 (3/3/2013)
-			2.0.4 (25/2/2013)
-	 
+		Title: VTU Result Parser Php Library
+		Description: Php library for parsing VTU Results. This library can dynamically parse VTU result site with respect to semester result.
+		Version : 3.1.0
 		Author: Vishal Vijay (V4 Creations)
 		Email: 0vishalvijay0@gmail.com
 		Support from: Team Matrix, www.vtulife.com
-		
-		How to use:
-			1) Copy this file to your folder.
-			2) Then import this library to your php code by using:
-					require_once __DIR__ . '/VTUResultParser.php';
-			3)Then create an object of this class by using:
-				$result=new VTUResultParser(0); //Here passing 0 for 'Regular result' and passing 1 for 'Revaluation result.' 
-			4)Then you can request for result by using requestResult($usn) method:
-				$result->requestResult("4PA12CSxxx");
-			5)Displaying the result :
-				$result->name : Name of student.
-				$result->usn : USN of student.
-				$result->semesters[$index] : It is an array which contains the semester in the order of result in VTU result page.
-				$result->$result[$index] : It is an array which contains the result of each semester(Fail or Second Class or etc.).
-				$result->percentage[$index] : It is an array which contains the persentage of each semester.
-				$result->total[$index] : It is an array which contains the total marks of each semester(Calculated and
-					use only for regular result).
-				$result->totalInPage : We can get the total mark which is show in VTU result page.
-				$result->markInTable : This is a 5 dimensional array for regular result and 6 dimensional array for
-					revaluation result which contains the marks in the form of tables.
-					markInTable(semester_order_number)(row_of_mark_table_same_as_vtu)(each_cell_as_per_vtu_result_page).		
-				$result->errorValue : To check error occurrence. For successful execution $errorValue will be -1.
-					If its value is not -1 you can call  $result->getError() to get the error message.
-				$result->getError() : To get the error message
-				$result->setProxy($proxy) : To set proxy eg.: $proxy="127.0.255.254:3128"
-		Thanks : We are expecting your contributions.
-	 */
+	*/
 	class VTUResultParser{
 		public $name;
 		public $usn;
@@ -58,17 +21,19 @@
 		private $proxy;
 		private $url;
 		
-		private $FLAG_REGULAR_RESULT='http://results.vtu.ac.in/vitavi.php';
-		private $FLAG_REVAL_RESULT='http://results.vtu.ac.in/vitavireval.php';
+		const BASE_URL='http://results.vtu.ac.in/';
+		const FLAG_REGULAR_RESULT='http://results.vtu.ac.in/vitavi.php';
+		const FLAG_REVAL_RESULT='http://results.vtu.ac.in/vitavireval.php';
+		const TOKEN_FILE = './cashe/token_cashe';
 		
 		function __construct($resultFlag) {
 			$this->resultFlag=$resultFlag;
 			$this->errorValue=-1;
 			$this->proxy="";
 			if($resultFlag==0)
-				$this->url=$this->FLAG_REGULAR_RESULT;
+				$this->url=self::FLAG_REGULAR_RESULT;
 			else
-				$this->url=$this->FLAG_REVAL_RESULT;
+				$this->url=self::FLAG_REVAL_RESULT;
 		}
 
 		public function setProxy($currentProxy){
@@ -86,7 +51,7 @@
 				return;
 			}
 
-			$fields = array('rid'=> urlencode($currentUsn),'submit' => urlencode('SUBMIT'));
+			$fields = array('rid'=> urlencode($currentUsn),'submit' => urlencode('SUBMIT'), '1f0a-B9BB_7e826562' => urlencode($this->getToken()));
 			$ch = curl_init($this->url);
 			curl_setopt($ch, CURLOPT_POST, true);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -124,7 +89,7 @@
 					$this->errorValue=7;
 					return;
 				}
-				if($this->url==$this->FLAG_REGULAR_RESULT){
+				if($this->url==self::FLAG_REGULAR_RESULT){
 					//Finding current sem total
 					if (preg_match("/Total Marks:.*?[0-9]+.*?<\/td>/", $html, $matches))
 						$this->totalInPage=trim(substr(strip_tags($matches[0]),13,-20));
@@ -241,6 +206,43 @@
 				}else
 					$this->result[$j]="FAIL";
 			}
+		}
+
+		private function getToken(){
+			$token = "";
+			$lastTokenInfo = file_get_contents(self::TOKEN_FILE);
+			if(empty($lastTokenInfo))
+				$token = $this->getAndCasheToken();
+			else{
+				$lastTokenInfo = explode("###", $lastTokenInfo);
+				if($lastTokenInfo[0]+7200000 > round(microtime(true) * 1000))
+					$token = $lastTokenInfo[1];
+				else
+					$token = $this->getAndCasheToken();
+			}
+			return $token;
+		}
+
+		private function getAndCasheToken(){
+			$token = $this->getTokenFromVTU();
+			file_put_contents(self::TOKEN_FILE, round(microtime(true) * 1000)."###".$token);
+			return $token;
+		}
+
+		private function getTokenFromVTU(){
+			$token = NULL;
+			$ch = curl_init(self::BASE_URL);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 45);
+			$html = curl_exec($ch);
+			if(curl_errno($ch)==0){
+				//Finding token
+				if (preg_match_all("/1f0a-B9BB_7e826562\" value=\".+?\">/", $html, $matches))
+					$token = substr($matches[0][0], 27, -2);
+			}
+			curl_close($ch);
+			return $token;
 		}
 		
 		public function getError(){
