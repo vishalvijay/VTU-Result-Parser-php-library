@@ -174,7 +174,7 @@
         if($this->isMCA())
           $maxTotal = 1050;
         else if($this->semesters[$j]<3)
-          $maxTotal = 825;
+          $maxTotal = 755;
         else if(($this->semesters[$j]==8||$this->semesters[$j]==10)&&$this->isFinalYear($j))
           $maxTotal = 750;
         else
